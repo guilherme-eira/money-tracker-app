@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Login')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="flex-grow-1 hero-section d-flex align-items-center justify-content-center">
+    <form method="post" action="#" th:action="@{/auth/login}" class="bg-white rounded-3 shadow" style="width: 50%; padding: 50px;">
+        <h5 class="pb-4 fw-semibold">Faça login</h5>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            Usuário ou senha incorretos. Por favor, tente novamente.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-info" role="alert">
+            Você saiu do sistema com sucesso.
+        </div>
+        <div th:if="${param.deleted}" class="alert alert-info" role="alert">
+            Sua conta e todos os seus dados foram excluídos com sucesso.
+        </div>
+        <div th:if="${param['password-changed']}" class="alert alert-success" role="alert">
+            Sua senha foi alterada com sucesso! Faça login usando as suas novas credenciais.
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success" role="alert"
+             th:text="${successMessage}">
+        </div>
+        <div class="mb-3">
+            <label for="identifierInput" class="form-label">Usuário</label>
+            <input type="text" class="form-control" id="identifierInput" name="username" placeholder="Digite o email ou CPF">
+        </div>
+        <div class="mb-3 pb-3">
+            <label for="passwordInput" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Digite a senha">
+        </div>
+        <div class="mb-4 d-flex justify-content-between">
+            <div class="form-check-reverse">
+                <label class="form-check-label" for="remember-me">Lembrar de mim:</label>
+                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
+            </div>
+            <a th:href="@{/auth/account-recover}" style="color: #6b54ec">Esqueci minha senha</a>
+        </div>
+        <button type="submit" class="btn btn-primary action-btn mb-2">Entrar</button>
+        <hr>
+        <div class="d-flex justify-content-center">
+                <span class="mt-3">Ainda não tem uma conta? <a th:href="@{/user/create}" style="color: #6b54ec">Cadastre-se
+                        aqui</a></span>
+        </div>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+</body>
+</html>

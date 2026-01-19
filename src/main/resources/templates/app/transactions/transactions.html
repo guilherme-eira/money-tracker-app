@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Movimentações')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="container flex-grow-1 bg-white p-4 rounded-3 shadow my-5">
+    <h3>Minhas Transações</h3>
+    <hr>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert"
+         th:text="${successMessage}">
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+         th:text="${errorMessage}">
+    </div>
+
+    <div class="row g-4 pt-3">
+
+        <aside class="col-lg-3">
+            <form th:action="@{/transactions}" method="get"
+                  class="bg-body-tertiary p-3 rounded border h-100">
+
+                <h3 class="mt-0 border-bottom pb-2 h5">Filtros</h3>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-bold small">Busca</label>
+                    <input type="text" id="description" class="form-control" placeholder="Buscar por descrição..."
+                           name="description" th:value="${transactionsData.description}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Período</label>
+                    <div class="row g-2">
+                        <div class="col-8">
+                            <select class="form-select text-capitalize" name="month">
+                                <option th:each="i : ${#numbers.sequence(1, 12)}"
+                                        th:value="${i}"
+                                        th:text="${T(java.time.Month).of(i).getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).forLanguageTag('pt-BR'))}"
+                                        th:selected="${i == transactionsData.startDate.monthValue}">
+                                    Janeiro
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" class="form-control" name="year"
+                                   th:value="${transactionsData.startDate.year}"
+                                   placeholder="Ano">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label fw-bold small">Categoria</label>
+                    <select id="category" class="form-select" name="categoryId">
+                        <option value="">Todas as Categorias</option>
+                        <option th:each="cat : ${transactionsData.allCategories}"
+                                th:value="${cat.id}"
+                                th:text="|${cat.categoryName} (${cat.type.name() == 'INCOME' ? 'Receita' : 'Despesa'})|"
+                                th:selected="${cat.id == transactionsData.categoryId}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary action-btn">Aplicar</button>
+                    <a th:href="@{/transactions}" class="btn btn-secondary">Limpar</a>
+                </div>
+            </form>
+        </aside>
+
+        <section class="col-lg-9">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex gap-3">
+                    <div class="bg-body-tertiary p-2 rounded border small">
+                        Receitas (Filtro):
+                        <span class="text-success fw-semibold income-text"
+                              th:text="${#numbers.formatCurrency(transactionsData.filteredIncome)}"></span>
+                    </div>
+                    <div class="bg-body-tertiary p-2 rounded border small">
+                        Despesas (Filtro):
+                        <span class="text-danger fw-semibold expense-text"
+                              th:text="'-' + ${#numbers.formatCurrency(transactionsData.filteredExpenses)}"></span>
+                    </div>
+                </div>
+                <a class="btn btn-primary action-btn" th:href="@{/transactions/create}">
+                    + Adicionar Nova Transação
+                </a>
+            </div>
+
+            <table class="table table-hover align-middle">
+                <thead class="table-light text-uppercase small">
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Valor</th>
+                    <th scope="col">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tx : ${transactionsData.transactions.content}">
+                    <td th:text="${#temporals.format(tx.date, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${tx.description}"></td>
+                    <td th:text="${tx.categoryName}"></td>
+                    <td class="fw-semibold"
+                        th:classappend="${tx.type == T(io.github.guilherme_eira.money_tracker_app.domain.enumeration.TransactionType).INCOME} ? 'text-success income-text' : 'text-danger expense-text'"
+                        th:text="(${tx.type == T(io.github.guilherme_eira.money_tracker_app.domain.enumeration.TransactionType).INCOME} ? '+ ' : '- ') + ${#numbers.formatCurrency(tx.value)}">
+                    </td>
+                    <td>
+                        <a th:href="@{/transactions/{id}/update(id=${tx.id})}" class="me-2 text-decoration-none" title="Editar">
+                            <i class="bi bi-pencil-fill balance-text"></i>
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-link p-0 m-0 text-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteTransactionModal"
+                                th:data-id="${tx.id}">
+                            <i class="bi bi-trash-fill balance-text"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr th:if="${transactionsData.transactions.empty}">
+                    <td colspan="5" class="text-center text-body-secondary py-4">
+                        Nenhuma transação encontrada para os filtros selecionados.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <nav aria-label="Paginação" class="d-flex justify-content-between align-items-center mt-4"
+                 th:if="${transactionsData.transactions.totalPages > 1}">
+
+                <a class="btn btn-outline-secondary"
+                   th:href="@{/transactions(
+                        page=${transactionsData.transactions.number - 1},
+                        description=${transactionsData.description},
+                        categoryId=${transactionsData.categoryId},
+                        month=${transactionsData.startDate.monthValue},
+                        year=${transactionsData.startDate.year})}"
+                   th:classappend="${transactionsData.transactions.first} ? 'disabled' : ''">
+                    &lt; Anterior
+                </a>
+
+                <span class="text-body-secondary fw-semibold">
+                    Página
+                    <span th:text="${transactionsData.transactions.number + 1}">1</span> de
+                    <span th:text="${transactionsData.transactions.totalPages}">10</span>
+                </span>
+
+                <a class="btn btn-outline-secondary"
+                   th:href="@{/transactions(
+                        page=${transactionsData.transactions.number + 1},
+                        description=${transactionsData.description},
+                        categoryId=${transactionsData.categoryId},
+                        month=${transactionsData.startDate.monthValue},
+                        year=${transactionsData.startDate.year})}"
+                   th:classappend="${transactionsData.transactions.last} ? 'disabled' : ''">
+                    Próximo &gt;
+                </a>
+            </nav>
+
+        </section>
+    </div>
+
+    <div class="modal fade" id="deleteTransactionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 fw-semibold">Excluir Transação</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir esta transação?</p>
+                    <p class="small text-muted mb-0">Essa ação é irreversível.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                    <form id="confirmDeleteForm" method="post" action="" th:action="@{/transactions}">
+                        <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+<script th:src="@{/js/transaction-deletion.js}"></script>
+
+</body>
+</html>

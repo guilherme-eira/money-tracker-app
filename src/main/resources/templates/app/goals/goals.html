@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Metas')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="flex-grow-1 container-xl my-4">
+    <h3 class="mt-4">Minhas Metas</h3>
+    <hr>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}">
+    </div>
+
+    <div class="d-flex justify-content-between mb-4"
+         th:with="prev=${goalsData.startDate.minusMonths(1)},
+                  next=${goalsData.startDate.plusMonths(1)}">
+
+        <div class="d-flex align-items-center bg-white px-3 py-2 rounded shadow-sm border">
+            <span class="fw-semibold me-3 text-dark">Período:</span>
+
+            <a class="btn btn-sm btn-outline-secondary border-0" title="Mês Anterior"
+               th:href="@{/goals(month=${prev.monthValue}, year=${prev.year})}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+
+            <span class="fw-semibold text-secondary text-capitalize px-3"
+                  th:text="${#temporals.format(goalsData.startDate, 'MMMM / yyyy')}">
+                            Outubro / 2025</span>
+
+            <a class="btn btn-sm btn-outline-secondary border-0" title="Próximo Mês"
+               th:href="@{/goals(month=${next.monthValue}, year=${next.year})}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div>
+            <a th:href="@{/goals/create}" class="btn btn-primary action-btn">
+                + Criar Nova Meta
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 justify-content-center">
+
+        <div class="col" th:each="goal : ${goalsData.goals.content}">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h3 class="h6 m-0 text-dark" th:text="${goal.categoryName}">Restaurantes</h3>
+                    <div class="actions">
+                        <a th:href="@{/goals/{id}/update(id=${goal.id})}" class="me-2 text-decoration-none me-3"
+                           title="Editar">
+                            <i class="bi bi-pencil-fill balance-text"></i>
+                        </a>
+                        <button type="button"
+                                class="btn btn-link p-0 m-0 align-baseline"
+                                title="Excluir"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteGoalModal"
+                                th:data-id="${goal.id}">
+                            <i class="bi bi-trash-fill balance-text"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between small mb-1 text-secondary">
+                            <span>Gasto: <strong th:text="${#numbers.formatCurrency(goal.currentAmount)}">R$
+                                    350,00</strong></span>
+                        <span>Meta: <span th:text="${#numbers.formatCurrency(goal.maxAmount)}">R$
+                                    500,00</span></span>
+                    </div>
+                    <div class="progress progress-bar-goals" role="progressbar" aria-label="Progresso da meta"
+                         th:attr="aria-valuenow=${goal.progressPercent}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar"
+                             th:classappend="${goal.isOverBudget} ? 'progress-bar-danger' : 'progress-bar-sucess'"
+                             th:style="'width: ' + ${goal.progressPercent} + '%;'"></div>
+                    </div>
+                    <p th:if="${!goal.isOverBudget}" class="small mt-2 mb-0 income-text"
+                       th:text="'Você ainda pode gastar ' + ${#numbers.formatCurrency(goal.remainingAmount)} + '.'">
+                    </p>
+                    <p th:if="${goal.isOverBudget}" class="small mt-2 mb-0 fw-semibold expense-text"
+                       th:text="'Você ultrapassou ' + ${#numbers.formatCurrency(goal.remainingAmount.abs())} + '!'">
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${goalsData.goals.empty}" class="col-12">
+            <div class="card card-body text-center text-body-secondary shadow-sm">
+                Nenhuma meta encontrada neste período.
+            </div>
+        </div>
+
+    </div>
+
+    <nav aria-label="Paginação" class="d-flex justify-content-between align-items-center mt-5"
+         th:if="${goalsData.goals.totalPages > 1}">
+
+        <a class="btn btn-outline-secondary"
+           th:href="@{/goals(
+               page=${goalsData.goals.number - 1},
+               month=${goalsData.startDate.monthValue},
+               year=${goalsData.startDate.year})}"
+           th:classappend="${goalsData.goals.first} ? 'disabled' : ''">
+            &lt; Anterior
+        </a>
+
+        <span class="text-body-secondary fw-semibold">
+                Página
+                <span th:text="${goalsData.goals.number + 1}">1</span> de
+                <span th:text="${goalsData.goals.totalPages}">10</span>
+            </span>
+
+        <a class="btn btn-outline-secondary"
+           th:href="@{/goals(
+               page=${goalsData.goals.number + 1},
+               month=${goalsData.startDate.monthValue},
+               year=${goalsData.startDate.year})}"
+           th:classappend="${goalsData.goals.last} ? 'disabled' : ''">
+            Próximo &gt;
+        </a>
+    </nav>
+
+    <div class="modal fade" id="deleteGoalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 fw-semibold">Excluir Meta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir esta meta?</p>
+                    <p class="small text-muted mb-0">Esta ação é irreversível.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                    <form id="confirmDeleteGoalForm" method="post" th:action="@{/goals}">
+                        <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+<script th:src="@{/js/goal-deletion.js}"></script>
+
+</body>
+
+</html>

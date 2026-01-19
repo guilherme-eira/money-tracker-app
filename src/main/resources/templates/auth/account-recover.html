@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Recuperar Senha')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="flex-grow-1 hero-section d-flex align-items-center justify-content-center">
+    <form method="post" th:action="@{/auth/account-recover}" th:object="${accountRecoverForm}" class="bg-white rounded-3 shadow" style="width: 50%; padding: 50px;">
+        <h5 class="pb-4 fw-semibold">Recuperação de conta</h5>
+        <div class="mb-4">
+            <label for="emailInput" class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control" id="emailInput" placeholder="Digite o email cadastrado"
+                   th:field="*{email}">
+        </div>
+        <button type="submit" class="btn btn-primary action-btn">Enviar</button>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+</body>
+</html>

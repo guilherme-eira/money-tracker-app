@@ -1,0 +1,15 @@
+INSERT INTO categories (id, name, transaction_type) VALUES
+(UUID_TO_BIN('5656a15e-e4bb-11f0-92e9-68f728f67dee'), 'Renda de Trabalho', 'INCOME'),
+(UUID_TO_BIN('56585c99-e4bb-11f0-92e9-68f728f67dee'), 'Renda Extra e Serviços', 'INCOME'),
+(UUID_TO_BIN('5658d36b-e4bb-11f0-92e9-68f728f67dee'), 'Renda Passiva e Investimentos', 'INCOME'),
+(UUID_TO_BIN('565944eb-e4bb-11f0-92e9-68f728f67dee'), 'Outras Entradas', 'INCOME'),
+(UUID_TO_BIN('5659b272-e4bb-11f0-92e9-68f728f67dee'), 'Moradia e Habitação', 'EXPENSE'),
+(UUID_TO_BIN('565a2e21-e4bb-11f0-92e9-68f728f67dee'), 'Alimentação', 'EXPENSE'),
+(UUID_TO_BIN('565a8df9-e4bb-11f0-92e9-68f728f67dee'), 'Transporte', 'EXPENSE'),
+(UUID_TO_BIN('565af48e-e4bb-11f0-92e9-68f728f67dee'), 'Saúde e Bem-estar', 'EXPENSE'),
+(UUID_TO_BIN('565b4e4d-e4bb-11f0-92e9-68f728f67dee'), 'Educação e Desenvolvimento', 'EXPENSE'),
+(UUID_TO_BIN('565bb70b-e4bb-11f0-92e9-68f728f67dee'), 'Lazer e Entretenimento', 'EXPENSE'),
+(UUID_TO_BIN('565c1dc1-e4bb-11f0-92e9-68f728f67dee'), 'Compras e Vestuário', 'EXPENSE'),
+(UUID_TO_BIN('565c824e-e4bb-11f0-92e9-68f728f67dee'), 'Serviços Financeiros e Impostos', 'EXPENSE'),
+(UUID_TO_BIN('565cdb3d-e4bb-11f0-92e9-68f728f67dee'), 'Aporte em Investimentos', 'EXPENSE'),
+(UUID_TO_BIN('565d276d-e4bb-11f0-92e9-68f728f67dee'), 'Outras Despesas', 'EXPENSE');

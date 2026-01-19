@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Perfil')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{fragments/header :: header}">
+</header>
+<main class="flex-grow-1 hero-section d-flex flex-column align-items-center justify-content-center">
+    <form method="post" th:action="@{/user/update}" th:object="${updateUserForm}" class="bg-white rounded-3 shadow mb-5"
+          style="width: 50%; padding: 50px;">
+
+        <h5 class="pb-4 fw-semibold">Atualizar Informações</h5>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">
+            <strong class="d-block mb-1">Por favor, corrija os erros abaixo:</strong>
+            <ul class="m-0 pl-3">
+                <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <label for="nameInput" class="form-label fw-semibold">Nome</label>
+                <input type="text" class="form-control" id="nameInput" th:field="*{name}">
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="documentInput" class="form-label fw-semibold">CPF</label>
+                <input type="text" class="form-control" id="documentInput" th:field="*{document}" disabled readonly>
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="emailInput" class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" id="emailInput" th:field="*{email}" disabled readonly>
+                <div class="form-text mt-3">
+                    O e-mail e CPF não podem ser alterados.
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <a th:href="@{/overview}" class="btn btn-secondary">Cancelar</a>
+
+            <button type="submit" class="btn btn-primary action-btn">
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+
+    <div class="border border-opacity-25 rounded-3 bg-white shadow"
+         style="width: 50%; padding: 30px;">
+        <h3 class="h5 fw-semibold text-danger mb-4">Zona de Perigo</h3>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <p class="mb-0 fw-semibold">Excluir sua conta</p>
+                <p class="small text-secondary mb-0">
+                    Uma vez excluída, sua conta não pode ser recuperada. Todas as transações e metas serão
+                    perdidas.
+                </p>
+            </div>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                    data-bs-target="#deleteAccountModal">
+                Excluir Conta
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h1 class="modal-title fs-5 fw-semibold">Excluir Conta Permanentemente</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+                        <div>
+                            Atenção: Esta ação apagará todos os seus dados do Money Tracker.
+                        </div>
+                    </div>
+
+                    <p class="mb-2">Para confirmar, digite <strong>excluir-conta</strong> no campo abaixo:</p>
+                    <input type="text" class="form-control" id="deleteConfirmationInput" placeholder="excluir-conta"
+                           autocomplete="off">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                    <form th:action="@{/user/delete}" method="post">
+                        <button type="submit" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+                            Sim, quero excluir tudo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+<script th:src="@{/js/user-deletion.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Cadastro')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="flex-grow-1 hero-section d-flex align-items-center justify-content-center">
+    <form method="post" action="#" th:action="@{/user/create}" th:object="${createUserForm}"  class="bg-white rounded-3 shadow" style="width: 50%; padding: 50px;">
+
+        <h5 class="pb-4 fw-semibold">Crie uma nova conta</h5>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">
+            <strong>Por favor, corrija os erros abaixo:</strong>
+            <ul>
+                <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+            </ul>
+        </div>
+
+        <div class="row mb-4">
+
+            <div class="col-lg-12 mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Ex: João da Silva">
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="document" class="form-label">CPF</label>
+                <input type="text" class="form-control" id="document" th:field="*{document}" placeholder="Ex: 12345678900 (apenas números)">
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="exemplo@email.com">
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Crie uma senha segura">
+            </div>
+
+            <div class="col-lg-12 mb-3">
+                <label for="passwordConfirmation" class="form-label">Confirme Sua Senha</label>
+                <input type="password" class="form-control" id="passwordConfirmation" th:field="*{passwordConfirmation}" placeholder="Repita a senha anterior">
+            </div>
+
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn btn-primary action-btn">Cadastrar</button>
+            <span>Já tem uma conta criada? <a th:href="@{/auth/login}" style="color: #6b54ec">Faça Login</a></span>
+        </div>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer" class="footer-custom text-center text-white">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center">
+
+        <div class="col-md-4 d-flex align-items-center">
+            <span class="mb-3 mb-md-0 ">
+                &copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}"></span>
+                <strong>Money Tracker</strong>
+            </span>
+        </div>
+
+        <div class="col-md-4 text-center d-none d-md-block small">
+            Desenvolvido por <span class="fw-semibold">Guilherme Eira</span>
+        </div>
+
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+            <li class="ms-3">
+                <a href="https://github.com/guilherme-eira" target="_blank" title="GitHub">
+                    <i class="bi bi-github fs-5"></i>
+                </a>
+            </li>
+            <li class="ms-3">
+                <a href="https://linkedin.com/in/guilherme-eira" target="_blank" title="LinkedIn">
+                    <i class="bi bi-linkedin fs-5"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Money Tracker | Visão Geral')}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{fragments/header :: header}">
+</header>
+
+<main class="container-xl py-5">
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert"
+         th:text="${successMessage}">
+    </div>
+
+    <div class="row row-cols-1 row-cols-lg-3 g-4 mb-4">
+        <div class="col">
+            <div class="bg-white p-3 rounded-3 shadow-sm border-card-income">
+                <h3 class="mt-0 fs-6 text-secondary text-uppercase">Receitas do Mês</h3>
+                <div class="fs-2 fw-semibold income-text"
+                     th:text="'+ ' + ${#numbers.formatCurrency(overviewData.userMonthIncome)}">
+                    + R$ 0,00
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="bg-white p-3 rounded-3 shadow-sm border-card-expense">
+                <h3 class="mt-0 fs-6 text-secondary text-uppercase ">Despesas do Mês</h3>
+                <div class="fs-2 fw-semibold expense-text"
+                     th:text="'- ' + ${#numbers.formatCurrency(overviewData.userMonthExpenses)}">
+                    - R$ 0,00
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="bg-white p-3 rounded-3 shadow-sm border-card-balance">
+                <h3 class="mt-0 fs-6 text-secondary text-uppercase">Saldo Atual</h3>
+                <div class="fs-2 fw-semibold balance-text"
+                     th:text="${#numbers.formatCurrency(overviewData.userCurrentBalance)}">
+                    R$ 0,00
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-lg-6">
+
+            <div class="bg-white p-3 rounded-3 shadow-sm mb-4">
+                <h3 class="mt-0 border-bottom border-light-subtle pb-2">Despesas por Categoria</h3>
+                <div id="chart-expenses-category"
+                     class="w-100 bg-body-tertiary d-flex align-items-center justify-content-center text-body-secondary fw-bold rounded-2 chart-placeholder"
+                     style="min-height: 330px; position: relative;"
+                     th:data-chart-data="${overviewData.expensesByCategoryJson}">
+                    <span class="d-none">Carregando gráfico...</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-3 rounded-3 shadow-sm">
+                <h3 class="mt-0 border-bottom border-light-subtle pb-2">Despesas Diárias (Última Semana)</h3>
+                <div id="chart-expenses-week"
+                     class="w-100 bg-body-tertiary d-flex align-items-center justify-content-center text-body-secondary fw-bold rounded-2 chart-placeholder"
+                     style="min-height: 330px; position: relative;"
+                     th:data-chart-data="${overviewData.expensesByDayOfWeekJson}">
+                    <span class="d-none">Carregando gráfico...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+
+            <div class="bg-white p-3 rounded-3 shadow-sm mb-4 d-flex flex-column" style="min-height: 410px;">
+                <h3 class="mt-0 border-bottom border-light-subtle pb-2">Últimas Transações</h3>
+
+                <div class="flex-grow-1 d-flex flex-column" th:classappend="${overviewData.userRecentTransactions.empty} ? 'justify-content-center' : ''">
+                    <table class="w-100 transactions-table-summary">
+                        <tbody>
+                        <tr th:each="tx : ${overviewData.userRecentTransactions}">
+                            <td class="py-2 px-1 border-bottom">
+                                <div class="text-body-secondary"><small th:text="${#temporals.format(tx.date, 'dd/MM')}"></small></div>
+                                <div class="fw-semibold" th:text="${tx.description}"></div>
+                            </td>
+                            <td class="py-2 px-1 border-bottom text-end fw-semibold"
+                                th:classappend="${tx.type.name() == 'INCOME'} ? 'income-text' : 'expense-text'"
+                                th:text="(${tx.type.name() == 'INCOME'} ? '+ ' : '- ') + ${#numbers.formatCurrency(tx.value)}">
+                            </td>
+                        </tr>
+                        <div th:if="${overviewData.userRecentTransactions.empty}"
+                             class="d-flex flex-column justify-content-center align-items-center h-100 text-body-secondary"
+                             style="min-height: 200px;">
+                            <i class="bi bi-receipt d-block fs-3 mb-2"></i>
+                            <span>Nenhuma transação recente.</span>
+                        </div>
+                        </tbody>
+                    </table>
+                </div>
+                <a th:href="@{/transactions}" class="d-block text-end fw-semibold text-decoration-none mt-3 transactions-link">
+                    Ver todas as movimentações &rarr;
+                </a>
+            </div>
+
+            <div class="bg-white p-3 rounded-3 shadow-sm d-flex flex-column" style="min-height: 410px;">
+                <h3 class="mt-0 border-bottom border-light-subtle pb-2">Resumo de Metas</h3>
+                <div class="flex-grow-1 d-flex flex-column mt-2" th:classappend="${overviewData.userGoalsSummary.empty} ? 'justify-content-center' : ''">
+                    <div class="mb-2 py-3 px-1 border-bottom" th:each="goal : ${overviewData.userGoalsSummary}">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold" th:text="${goal.categoryName}">Categoria</span>
+                            <span class="text-body-secondary">
+                                <small th:text="${#numbers.formatCurrency(goal.currentAmount)} + ' / ' + ${#numbers.formatCurrency(goal.maxExpense)}"></small>
+                            </span>
+                        </div>
+                        <div class="progress progress-bar-summary" role="progressbar">
+                            <div class="progress-bar progress-bar-custom"
+                                 th:style="'width: ' + ${goal.progressPercent} + '%;'">
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${overviewData.userGoalsSummary.empty}"
+                         class="d-flex flex-column justify-content-center align-items-center h-100 text-body-secondary"
+                         style="min-height: 200px;">
+                        <i class="bi bi-bullseye d-block fs-3 mb-2"></i>
+                        <span>Nenhuma meta definida.</span>
+                    </div>
+                </div>
+
+                <a th:href="@{/goals}" class="d-block text-end fw-semibold text-decoration-none mt-3 goals-link">
+
+                    Ver todas as metas &rarr;
+
+                </a>
+
+            </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}">
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/js/overview-charts.js}"></script>
+
+</body>
+
+</html>
