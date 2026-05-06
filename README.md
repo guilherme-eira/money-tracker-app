@@ -2,14 +2,26 @@
 
 O **Money Tracker App** é uma aplicação web completa para gestão de finanças pessoais. A plataforma permite que usuários registrem suas receitas e despesas, categorizem transações, definam metas financeiras e visualizem a saúde financeira através de um dashboard intuitivo com gráficos dinâmicos.
 
-![Página Principal do Money Tracker](assets/overview.png)
-
 Este projeto foi desenvolvido como parte de um portfólio profissional, demonstrando a aplicação prática de conhecimentos em desenvolvimento Java, abrangendo:
 
 * **Clean Architecture:** Na estruturação desacoplada entre regras de negócio e frameworks.
 * **Server-Side Rendering (SSR):** Utilização do Thymeleaf para gerar interfaces dinâmicas no servidor.
 * **Spring Security:** Implementação de autenticação, autorização e proteção de dados.
 * **Data Visualization:** Integração com bibliotecas gráficas para análise de dados.
+
+## 🖼️ Demonstração da Interface
+
+### 🔹 Landing Page
+![Landing Page](/assets/landing-page.png)
+
+### 🔹 Dashboard
+![Overview Page](/assets/overview.png)
+
+### 🔹 Transações
+![Transactions Page](/assets/transactions.png)
+
+### 🔹 Metas Financeiras
+![Goals Page](/assets/goals.png)
 
 ## 🏗️ Arquitetura
 
